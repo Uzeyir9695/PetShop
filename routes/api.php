@@ -6,6 +6,14 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\OrderStatusController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ImageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,6 +54,40 @@ Route::prefix('v1')->group(function () {
             Route::get('/orders', 'orders')->name('orders');
             Route::put('/edit', 'edit')->name('edit');
             Route::delete('/delete', 'delete')->name('delete');
+        });
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::controller(BlogController::class)->prefix('/main')->group(function(){
+            Route::get('/blog', 'blogList');
+            Route::get('/blog/{uuid}', 'blogShow');
+            Route::get('/promotions', 'promotions');
+        });
+
+        Route::apiResources([
+            '/brand' => BrandController::class,
+            '/categorie' => CategoryController::class,
+            '/order' => OrderController::class,
+            '/order-status' => OrderStatusController::class,
+            '/payments' => PaymentController::class,
+            '/product' => ProductController::class,
+        ]);
+        Route::resource('/brands', BrandController::class)->only('index');
+        Route::resource('/categories', CategoryController::class)->only('index');
+        Route::resource('/orders', OrderController::class)->only('index');
+        Route::resource('/order-statuses', OrderStatusController::class)->only('index');
+        Route::resource('/products', ProductController::class)->only('index');
+
+        Route::get('/order/{uuid}/download', [OrderController::class, 'orderDownload']);
+
+        Route::controller(OrderController::class)->prefix('/orders')->group(function(){
+            Route::get('/orders/dashboard', 'orderDashboard');
+            Route::get('/orders/shipment-locator', 'shipmentLocator');
+        });
+
+        Route::controller(ImageController::class)->prefix('/file')->group(function(){
+            Route::get('/upload', 'imageUpload');
+            Route::get('/{uuid}', 'getImage');
         });
     });
 });
