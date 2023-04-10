@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Str;
 use Lcobucci\JWT\Token\Builder;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -26,7 +27,7 @@ trait JwtTokenTrait
         $builder = (new Builder($encoder, $claimFormatter))
             ->issuedBy(config('app.url'))
             ->permittedFor(config('app.url'))
-            ->identifiedBy($data['uuid'])
+            ->identifiedBy(Str::uuid())
             ->issuedAt(new \DateTimeImmutable())
             ->withClaim('user_data', $data);
 

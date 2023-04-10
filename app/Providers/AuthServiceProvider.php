@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,21 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Auth::extend('jwt', function ($app, $name, array $config) {
+            $guard = new RequestGuard(function ($request) use ($config) {
+                $token = $request->bearerToken();
+                if(!$token) {
+                    return response()->json([
+                        'message' => 'Unauthenticated'
+                    ], 401);
+                    exit();
+                }
+                $user = authUser($token);
+                return $user;
+
+            }, $app['request'], $app['auth']->createUserProvider($config['provider']));
+
+            return $guard;
+        });
     }
 }
