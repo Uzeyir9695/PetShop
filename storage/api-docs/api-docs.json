@@ -3049,6 +3049,29 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "properties": {
+                                    "category_uuid": {
+                                        "type": "string",
+                                        "example": "Category UUID"
+                                    },
+                                    "uuid": {
+                                        "type": "string",
+                                        "example": "Product UUID"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Product Title"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 9.99
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Product Description"
+                                    }
+                                },
                                 "type": "object"
                             }
                         }
