@@ -50,7 +50,7 @@ class OrderTest extends TestCase
     }
 
 
-    public function testCreateOrderWithAuthorization()
+    public function testCreateOrder()
     {
         $data = $this->orderData();
         $response =  $this->actingAs($this->getAuthUser(), 'jwt')->json('get', '/api/v1/orders', $data);
@@ -60,7 +60,7 @@ class OrderTest extends TestCase
         $response->assertJson(['orders' => $response->json()['orders']]);
     }
 
-    public function testUpdateOrderWithAuthorization()
+    public function testUpdateOrder()
     {
         $data = $this->getOrder();
         $data['amount'] = '444.87';
@@ -69,14 +69,14 @@ class OrderTest extends TestCase
         $update->assertJson(['message' => 'Order updated successfully.', 'order' => $update->json()['order']]);
     }
 
-    public function testDeleteOrderWithAuthorization()
+    public function testDeleteOrder()
     {
         $delete = $this->json('DELETE', '/api/v1/order/' . $this->getOrder()['uuid']);
         $delete->assertStatus(200);
         $delete->assertJson(['message' => 'Order deleted successfully.']);
     }
 
-    public function testDownloadOrderWithAuthorization()
+    public function testDownloadOrder()
     {
         $delete = $this->json('get', '/api/v1/order/' . $this->getOrder()['uuid'].'/download');
         $delete->assertStatus(200);

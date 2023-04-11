@@ -46,7 +46,7 @@ class ProductTest extends TestCase
     }
 
 
-    public function testCreateProductWithAuthorization()
+    public function testCreateProduct()
     {
         $response =  $this->actingAs($this->getAuthUser(), 'jwt')->json('get', '/api/v1/products', $this->productData());
         // Ensure that the response has a successful status code
@@ -54,7 +54,7 @@ class ProductTest extends TestCase
         $response->assertJson(['products' => $response->json()['products']]);
     }
 
-    public function testUpdateProductWithAuthorization()
+    public function testUpdateProduct()
     {
         $data = $this->getProduct();
         $data['title'] = 'new bb one';
@@ -63,7 +63,7 @@ class ProductTest extends TestCase
         $update->assertJson(['message' => 'Product updated successfully.', 'product' => $update->json()['product']]);
     }
 
-    public function testDeleteProductWithAuthorization()
+    public function testDeleteProduct()
     {
         $delete = $this->json('DELETE', '/api/v1/product/' . $this->getProduct()['uuid']);
         $delete->assertStatus(200);
