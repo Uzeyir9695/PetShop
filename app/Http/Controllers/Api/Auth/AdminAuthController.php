@@ -10,6 +10,7 @@ use App\Traits\JwtTokenTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -46,22 +47,11 @@ class AdminAuthController extends Controller
     public function register(UserForm $request)
     {
         $data = $request->validated();
-
-        $data['uuid'] = \Illuminate\Support\Str::uuid();
-        $data['password'] = Hash::make($data['password']);
-
-        if ($request->segment(3) === 'admin') {
-            $data['is_admin'] = 1;
-        }
-
-        $user = User::create($data);
-        $data = ['uuid' => $user->uuid, 'authorized' => false];
-
-        $token = $this->generateJwtToken($data);
-
+        $registerForm = apiRegister($data);
+        $token = $this->generateJwtToken($registerForm[0]);
         return response()->json([
             'message' => 'Successfully registered',
-            'admin' => $user,
+            'admin' => $registerForm[1],
             'token' => $token->toString()
         ], 201);
     }
@@ -94,27 +84,11 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6|max:255',
-        ]);
-
-        $credentials = $request->only(['email', 'password']);
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-        $user = Auth::user();
-
-        $data = [
-            'uuid' => $user->uuid,
-            'authorized' => true,
-            'is_admin' => $user->is_admin,
-            'expires_at' => \DateTimeImmutable::createFromFormat('U', time() + config('jwt.ttl')),
-        ];
-        $token = $this->generateJwtToken($data);
+        $loginForm = apiLogin($request);
+        $token = $this->generateJwtToken($loginForm[0]);
 
         JwtToken::create([
-            'user_id' => $user->id,
+            'user_id' => $loginForm[1]->id,
             'unique_id' => $token->claims()->get('jti'),
             'token_title' => 'API Access Token',
             'restrictions' => null,
@@ -123,10 +97,9 @@ class AdminAuthController extends Controller
             'last_used_at' => null,
             'refreshed_at' => null
         ]);
-
         return response()->json([
             'message' => 'Successfully logged in',
-            'admin' => $user,
+            'admin' => $loginForm[1],
             'token' => $token->toString()
         ]);
     }
@@ -146,25 +119,11 @@ class AdminAuthController extends Controller
 
     public function logout(Request $request)
     {
-        $tokenString = $request->bearerToken();
-        if (!$tokenString) {
-            return response()->json(['message' => 'Token not found'], 404);
-        }
-
-        $configuration = Configuration::forAsymmetricSigner(
-            new Sha256(),
-            InMemory::plainText(file_get_contents(base_path('keys/private.key'))),
-            InMemory::plainText(file_get_contents(base_path('keys/public.key'))),
-        );
-
-        $token = $configuration->parser()->parse($tokenString);
-
+        $token = apiLogout($request);
         try {
-            $jwtTokens = JwtToken::where('unique_id', $token->claims()->get('jti'))->get();
+            $jwtTokens = JwtToken::where('unique_id', $token->claims()->get('jti'))->first();
             if ($jwtTokens) {
-                foreach ($jwtTokens as $jwtToken) {
-                    $jwtToken->delete();
-                }
+                    $jwtTokens->delete();
                 return response()->json(['message' => 'Successfully logged out']);
             } else {
                 return response()->json(['message' => 'Token not found'], 404);
