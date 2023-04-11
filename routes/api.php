@@ -30,7 +30,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/admin/create', 'register')->name('admin.register');
         Route::post('/admin/login',  'login')->name('admin.login')->middleware(['jwt']);
 
-        Route::middleware(['auth:jwt'])->group(function () {
+        Route::middleware(['auth:jwt', 'jwt'])->group(function () {
             Route::post('/admin/logout', 'logout')->name('logout');
         });
     });
@@ -39,7 +39,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/user/create', 'register')->name('user.register');
         Route::post('/user/login',  'login')->name('user.login')->middleware(['jwt']);
 
-        Route::middleware(['auth:jwt'])->group(function () {
+        Route::middleware(['auth:jwt', 'jwt'])->group(function () {
             Route::post('/user/logout', 'logout')->name('logout');
         });
     });
