@@ -17,6 +17,9 @@ This is a pet-shop API documented using Swagger.
     - JWT_TTL=604800
     - L5_SWAGGER_GENERATE_ALWAYS=true
 
+- Swagger API documentation path:
+    - '/api/v1/documentation'
+
 
 - Run seeders and migration files using this command:
     - php artisan migrate:fresh --seed
