@@ -26,9 +26,7 @@ class AuthServiceProvider extends ServiceProvider
             $guard = new RequestGuard(function ($request) use ($config) {
                 $token = $request->bearerToken();
                 if(!$token) {
-                    return response()->json([
-                        'message' => 'Unauthenticated'
-                    ], 401);
+                    print_r('Please provide a token');
                     exit();
                 }
                 $user = authUser($token);
