@@ -25,14 +25,14 @@ class JwtMiddleware
             if ($request->routeIs('admin.*')) {
                 return $next($request);
             } else {
-                return response()->json(['error' => 'Unable to proceed action. Please check your token!'], 401);
+                return response()->json(['error' => 'Unable to proceed action. Make sure that the token belongs to admin!'], 401);
             }
         } else {
             // If the user is not an admin, allow access to all routes with the "user" prefix
             if ($request->routeIs('user.*')) {
                 return $next($request);
             } else {
-                return response()->json(['error' => 'Unable to proceed action. Please check your token!'], 401);
+                return response()->json(['error' => 'Unable to proceed action. Make sure that the token belongs to user!'], 401);
             }
         }
 

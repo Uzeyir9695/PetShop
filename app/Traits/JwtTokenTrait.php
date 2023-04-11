@@ -17,7 +17,7 @@ trait JwtTokenTrait
      * @param int $id
      * @return string
      */
-    protected function generateJwtToken($data)
+    public function generateJwtToken($data)
     {
         $encoder = new JoseEncoder(); // use a different encoder
         $claimFormatter = new ChainedFormatter(); // use a different claim formatter
