@@ -3,7 +3,7 @@
     "info": {
         "title": "PetShop API",
         "description": "My PetShop API description",
-        "version": "1.0"
+        "version": "8.5.0"
     },
     "paths": {
         "/api/v1/admin/user-listing": {
@@ -3049,6 +3049,13 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "category_uuid",
+                                    "uuid",
+                                    "title",
+                                    "price",
+                                    "description"
+                                ],
                                 "properties": {
                                     "category_uuid": {
                                         "type": "string",

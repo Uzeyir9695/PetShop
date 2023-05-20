@@ -9,7 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 /**
  * @OA\Info(
  *     title="PetShop API",
- *     version="1.0",
+ *     version="8.5.0",
  *     description="My PetShop API description"
  * )
  */
